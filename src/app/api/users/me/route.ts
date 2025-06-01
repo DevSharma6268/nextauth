@@ -9,18 +9,20 @@ connect()
 
 export async function POST(request: NextRequest){
     try {
-        const userId=await getDataFromToken(request)
+        const userId = await getDataFromToken(request);
 
-        User.findOne({_id:userId}).select("-password -verifyToken -verifyTokenExpiry").then((user)=>{
-            if(!user){
-                return NextResponse.json({error:"User not found"},{status:404})
-            }
-            return NextResponse.json({
-                message:"User data fetched successfully",
-                data:user
-            })
-        })
+        const user = await User.findOne({ _id: userId })
+            .select("-password -verifyToken -verifyTokenExpiry");
+
+        if (!user) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+
+        return NextResponse.json({
+            message: "User data fetched successfully",
+            data: user
+        });
     } catch (error) {
-        return NextResponse.json({error:(error as Error).message},{status:500})
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
     }
 }
